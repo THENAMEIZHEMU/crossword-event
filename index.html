@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +21,38 @@ align-items:center;
 min-height:100vh;
 }
 
+/* LOGIN */
+
+#loginScreen{
+background:#1e293b;
+padding:40px;
+border-radius:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+text-align:center;
+color:white;
+width:400px;
+}
+
+#loginScreen input{
+padding:10px;
+font-size:16px;
+border:none;
+border-radius:6px;
+margin-top:10px;
+}
+
+#loginScreen button{
+margin-top:15px;
+padding:10px 25px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* MAIN CONTENT */
+
 .container{
 background:#1e293b;
 padding:40px;
@@ -39,6 +72,15 @@ font-size:22px;
 color:#facc15;
 font-weight:bold;
 margin-bottom:20px;
+}
+
+.team{
+padding:10px;
+margin-bottom:20px;
+border-radius:6px;
+border:none;
+font-size:16px;
+width:220px;
 }
 
 table{
@@ -109,11 +151,34 @@ background:#16a34a;
 
 <body>
 
+<!-- PASSWORD SCREEN -->
+
+<div id="loginScreen">
+
+<h2>Enter Event Password</h2>
+
+<input id="passwordInput" type="password" placeholder="Password">
+
+<br>
+
+<button onclick="checkPassword()">Enter</button>
+
+<p id="error" style="color:red;"></p>
+
+</div>
+
+
+<!-- MAIN PUZZLE -->
+
+<div id="mainContent" style="display:none;">
+
 <div class="container">
 
 <h1>Crossword Challenge</h1>
 
 <div id="timer">10:00</div>
+
+<input id="team" class="team" placeholder="Team Name">
 
 <table>
 
@@ -188,27 +253,45 @@ background:#16a34a;
 <p>5. Internet data storage service (5)</p>
 <p>6. Device used to move cursor (5)</p>
 <p>7. Global computer network (8)</p>
-<p>8. Company that makes Windows (9)</p>
-<p>9. AI chatbot by OpenAI (7)</p>
 
 <h3>Down</h3>
 
 <p>2. Search engine by Google (6)</p>
 <p>4. Programming language used for web pages (10)</p>
-<p>6. Mobile OS by Google (7)</p>
-<p>7. Video sharing platform (7)</p>
-<p>10. Online meeting platform (4)</p>
-<p>11. Social media platform for photos (9)</p>
-<p>12. Cloud computing service by Amazon (3)</p>
-<p>13. Language used to style websites (3)</p>
 
 </div>
 
-<button>Submit</button>
+<button onclick="submitPuzzle()">Submit</button>
 
 </div>
+
+</div>
+
 
 <script>
+
+/* PASSWORD */
+
+const PASSWORD="aivolve";
+
+function checkPassword(){
+
+let entered=document.getElementById("passwordInput").value;
+
+if(entered===PASSWORD){
+
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("mainContent").style.display="block";
+
+}else{
+
+document.getElementById("error").innerText="Wrong Password";
+
+}
+
+}
+
+/* TIMER */
 
 let time=600;
 
@@ -224,14 +307,88 @@ time--;
 
 if(time<0){
 clearInterval(timer);
-alert("Time's up!");
+submitPuzzle();
 }
 
 }
 
 let timer=setInterval(updateTimer,1000);
 
+
+/* AUTO MOVE */
+
+const inputs=document.querySelectorAll("td input");
+
+inputs.forEach((input,index)=>{
+
+input.addEventListener("input",()=>{
+if(input.value.length===1 && index<inputs.length-1){
+inputs[index+1].focus();
+}
+});
+
+});
+
+/* ARROW NAVIGATION */
+
+inputs.forEach((input,index)=>{
+
+input.addEventListener("keydown",e=>{
+
+if(e.key==="ArrowRight") inputs[index+1]?.focus();
+if(e.key==="ArrowLeft") inputs[index-1]?.focus();
+
+});
+
+});
+
+
+/* SUBMIT TO GOOGLE SHEET */
+
+function submitPuzzle(){
+
+let team=document.getElementById("team").value;
+
+let timeTaken=600-time;
+
+fetch("https://script.google.com/macros/s/AKfycbynl1j3me94shkQGtvA78fU8bKtv4CDHzbyt_nUpiUNOatPKWiQ4-0NydBe7eevhGAq/exec",{
+
+method:"POST",
+
+body:JSON.stringify({
+team:team,
+time:timeTaken
+})
+
+})
+
+.then(()=>{
+
+alert("Submission successful!");
+
+location.reload();
+
+});
+
+}
+
+
+/* TAB SWITCH PROTECTION */
+
+document.addEventListener("visibilitychange",()=>{
+
+if(document.hidden){
+location.reload();
+}
+
+});
+
+window.addEventListener("blur",()=>{
+location.reload();
+});
+
 </script>
 
 </body>
 </html>
+```
