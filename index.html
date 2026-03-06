@@ -1,10 +1,15 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>AIvolve Crossword Challenge</title>
+<title>AIvolve Crossword</title>
 
 <style>
+
+*{
+box-sizing:border-box;
+}
 
 body{
 margin:0;
@@ -14,41 +19,136 @@ display:flex;
 justify-content:center;
 align-items:center;
 min-height:100vh;
+padding:20px;
 }
+
+/* LOGIN */
+
+#loginScreen{
+background:#1e293b;
+padding:30px;
+border-radius:12px;
+color:white;
+text-align:center;
+width:320px;
+}
+
+#loginScreen input{
+padding:10px;
+width:80%;
+border-radius:6px;
+border:none;
+}
+
+#loginScreen button{
+margin-top:10px;
+padding:10px 20px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* MAIN */
 
 .container{
 background:#1e293b;
-padding:40px;
+padding:25px;
 border-radius:12px;
 color:white;
-width:900px;
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
+width:100%;
+max-width:900px;
 }
 
 h1{
 text-align:center;
+margin-top:0;
 }
 
 #timer{
+text-align:center;
 font-size:22px;
 color:#facc15;
-text-align:center;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
-.question{
-margin-bottom:18px;
+.team{
+padding:8px;
+border-radius:6px;
+border:none;
+margin-bottom:15px;
 }
 
-.boxes input{
-width:35px;
-height:35px;
-margin:3px;
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(10,1fr);
+gap:4px;
+justify-content:center;
+margin:auto;
+max-width:400px;
+}
+
+.cell{
+position:relative;
+width:100%;
+padding-top:100%;
+}
+
+.cell input{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
 text-align:center;
 font-size:18px;
 border:2px solid #38bdf8;
 background:#0f172a;
 color:white;
+}
+
+.cell input:focus{
+background:#0284c7;
+outline:none;
+}
+
+.num{
+position:absolute;
+top:2px;
+left:4px;
+font-size:10px;
+color:#38bdf8;
+}
+
+/* CLUES */
+
+.clues{
+margin-top:20px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+.clues h3{
+color:#38bdf8;
+margin-bottom:5px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.grid{
+max-width:300px;
+}
+
+.clues{
+grid-template-columns:1fr;
+}
+
 }
 
 button{
@@ -66,15 +166,15 @@ cursor:pointer;
 
 <body>
 
-<!-- PASSWORD -->
+<!-- LOGIN -->
 
-<div id="loginScreen" class="container">
+<div id="loginScreen">
 
 <h2>Enter Password</h2>
 
-<input type="password" id="passwordInput">
+<input id="passwordInput" type="password">
 
-<br><br>
+<br>
 
 <button onclick="checkPassword()">Enter</button>
 
@@ -88,15 +188,45 @@ cursor:pointer;
 
 <div class="container">
 
-<h1>AIvolve Crossword Challenge</h1>
+<h1>AIvolve Crossword</h1>
 
 <div id="timer">10:00</div>
 
-<input id="team" placeholder="Team Name">
+<input id="team" class="team" placeholder="Team Name">
 
-<br><br>
+<!-- GRID -->
 
-<div id="questions"></div>
+<div class="grid" id="grid"></div>
+
+<!-- CLUES -->
+
+<div class="clues">
+
+<div>
+
+<h3>Across</h3>
+
+<p>1. Google search engine</p>
+<p>3. Device used to move cursor</p>
+<p>5. AI chatbot by OpenAI</p>
+<p>7. Cloud service by Amazon</p>
+<p>9. Version control system</p>
+
+</div>
+
+<div>
+
+<h3>Down</h3>
+
+<p>2. Language used for web pages</p>
+<p>4. Popular video platform</p>
+<p>6. Programming language named after snake</p>
+<p>8. Microsoft's OS</p>
+<p>10. Technology behind crypto</p>
+
+</div>
+
+</div>
 
 <button onclick="submitPuzzle()">Submit</button>
 
@@ -110,67 +240,30 @@ const PASSWORD="aivolve";
 let time=600;
 let timer;
 
-/* QUESTIONS */
+/* GRID CREATE */
 
-const questions=[
+const grid=document.getElementById("grid");
 
-{q:"Google search engine",len:6},
-{q:"Language used for web pages",len:4},
-{q:"Device used to move cursor",len:5},
-{q:"Popular video platform",len:7},
-{q:"AI chatbot by OpenAI",len:7},
+for(let i=0;i<100;i++){
 
-{q:"Cloud computing platform by Amazon",len:3},
-{q:"Programming language named after snake",len:6},
-{q:"Microsoft operating system",len:7},
-{q:"Technology behind cryptocurrencies",len:10},
-{q:"Language used to style websites",len:3},
-{q:"Version control system",len:3},
-{q:"Google mobile OS",len:7},
-{q:"Key value data structure",len:7},
-{q:"Markup language for web",len:4},
-{q:"Platform hosting Git repositories",len:6}
-
-];
-
-/* CREATE QUESTIONS */
-
-const container=document.getElementById("questions");
-
-questions.forEach((item,index)=>{
-
-let div=document.createElement("div");
-div.className="question";
-
-let p=document.createElement("p");
-p.innerText=(index+1)+". "+item.q;
-
-div.appendChild(p);
-
-let box=document.createElement("div");
-box.className="boxes";
-
-for(let i=0;i<item.len;i++){
+let cell=document.createElement("div");
+cell.className="cell";
 
 let input=document.createElement("input");
 input.maxLength=1;
 
-box.appendChild(input);
+cell.appendChild(input);
+grid.appendChild(cell);
 
 }
-
-div.appendChild(box);
-container.appendChild(div);
-
-});
 
 /* PASSWORD */
 
 function checkPassword(){
 
-let entered=document.getElementById("passwordInput").value;
+let p=document.getElementById("passwordInput").value;
 
-if(entered===PASSWORD){
+if(p===PASSWORD){
 
 document.getElementById("loginScreen").style.display="none";
 document.getElementById("mainContent").style.display="block";
@@ -206,6 +299,22 @@ submitPuzzle();
 
 }
 
+/* AUTO MOVE */
+
+const inputs=document.querySelectorAll(".cell input");
+
+inputs.forEach((input,index)=>{
+
+input.addEventListener("input",()=>{
+
+if(input.value.length===1){
+inputs[index+1]?.focus();
+}
+
+});
+
+});
+
 /* SUBMIT */
 
 function submitPuzzle(){
@@ -214,7 +323,7 @@ let team=document.getElementById("team").value;
 
 let responses=[];
 
-document.querySelectorAll(".boxes input").forEach(i=>{
+document.querySelectorAll(".cell input").forEach(i=>{
 responses.push(i.value.toUpperCase());
 });
 
@@ -264,3 +373,4 @@ if(e.ctrlKey && e.key==="r") e.preventDefault();
 
 </body>
 </html>
+```
