@@ -1,13 +1,10 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Crossword Challenge</title>
+<title>AIvolve Crossword Challenge</title>
 
 <style>
-
-*{box-sizing:border-box;}
 
 body{
 margin:0;
@@ -19,96 +16,39 @@ align-items:center;
 min-height:100vh;
 }
 
-/* LOGIN */
-
-#loginScreen{
-background:#1e293b;
-padding:40px;
-border-radius:14px;
-color:white;
-width:400px;
-text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
-}
-
-#loginScreen input{
-padding:10px;
-font-size:16px;
-border:none;
-border-radius:6px;
-margin-top:10px;
-}
-
-#loginScreen button{
-margin-top:15px;
-padding:10px 25px;
-background:#22c55e;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* MAIN */
-
 .container{
 background:#1e293b;
 padding:40px;
-border-radius:14px;
+border-radius:12px;
 color:white;
-width:820px;
-text-align:center;
+width:900px;
 box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+h1{
+text-align:center;
 }
 
 #timer{
 font-size:22px;
 color:#facc15;
-margin-bottom:15px;
-font-weight:bold;
+text-align:center;
+margin-bottom:20px;
 }
 
-.team{
-padding:10px;
-border-radius:6px;
-border:none;
-margin-bottom:15px;
+.question{
+margin-bottom:18px;
 }
 
-table{
-border-collapse:collapse;
-margin:auto;
-}
-
-td{
-width:40px;
-height:40px;
+.boxes input{
+width:35px;
+height:35px;
+margin:3px;
+text-align:center;
+font-size:18px;
 border:2px solid #38bdf8;
 background:#0f172a;
-position:relative;
-}
-
-td input{
-width:100%;
-height:100%;
-border:none;
-background:transparent;
 color:white;
-font-size:18px;
-text-align:center;
-}
-
-td input:focus{
-background:#0284c7;
-outline:none;
-}
-
-.num{
-position:absolute;
-top:2px;
-left:4px;
-font-size:10px;
-color:#38bdf8;
 }
 
 button{
@@ -121,30 +61,20 @@ border-radius:6px;
 cursor:pointer;
 }
 
-.clues{
-margin-top:25px;
-text-align:left;
-color:#e2e8f0;
-}
-
-.clues h3{
-color:#38bdf8;
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- PASSWORD SCREEN -->
+<!-- PASSWORD -->
 
-<div id="loginScreen">
+<div id="loginScreen" class="container">
 
-<h2>Enter Event Password</h2>
+<h2>Enter Password</h2>
 
-<input id="passwordInput" type="password" placeholder="Password">
+<input type="password" id="passwordInput">
 
-<br>
+<br><br>
 
 <button onclick="checkPassword()">Enter</button>
 
@@ -152,99 +82,21 @@ color:#38bdf8;
 
 </div>
 
-
-<!-- MAIN CONTENT -->
+<!-- MAIN -->
 
 <div id="mainContent" style="display:none;">
 
 <div class="container">
 
-<h1>Crossword Challenge</h1>
+<h1>AIvolve Crossword Challenge</h1>
 
 <div id="timer">10:00</div>
 
-<input id="team" class="team" placeholder="Team Name">
+<input id="team" placeholder="Team Name">
 
-<br>
+<br><br>
 
-<table>
-
-<tr>
-<td><span class="num">1</span><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-</tr>
-
-<tr>
-<td><span class="num">2</span><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-</tr>
-
-<tr>
-<td><span class="num">3</span><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-</tr>
-
-<tr>
-<td><span class="num">4</span><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-</tr>
-
-<tr>
-<td><span class="num">5</span><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-<td><input></td>
-</tr>
-
-</table>
-
-<div class="clues">
-
-<h3>Easy (5)</h3>
-
-<p>1. Google's search engine</p>
-<p>2. Language used for web pages</p>
-<p>3. Device used to move cursor</p>
-<p>4. Popular video platform</p>
-<p>5. AI chatbot by OpenAI</p>
-
-<h3>Tough (10)</h3>
-
-<p>6. Cloud computing platform by Amazon</p>
-<p>7. Programming language named after snake</p>
-<p>8. Microsoft's operating system</p>
-<p>9. Technology behind cryptocurrencies</p>
-<p>10. Language used to style websites</p>
-<p>11. Version control system</p>
-<p>12. Google's mobile OS</p>
-<p>13. Key-value data structure</p>
-<p>14. Markup language for web</p>
-<p>15. Platform hosting Git repositories</p>
-
-</div>
+<div id="questions"></div>
 
 <button onclick="submitPuzzle()">Submit</button>
 
@@ -252,14 +104,67 @@ color:#38bdf8;
 
 </div>
 
-
 <script>
 
-/* PASSWORD */
-
 const PASSWORD="aivolve";
-let timer;
 let time=600;
+let timer;
+
+/* QUESTIONS */
+
+const questions=[
+
+{q:"Google search engine",len:6},
+{q:"Language used for web pages",len:4},
+{q:"Device used to move cursor",len:5},
+{q:"Popular video platform",len:7},
+{q:"AI chatbot by OpenAI",len:7},
+
+{q:"Cloud computing platform by Amazon",len:3},
+{q:"Programming language named after snake",len:6},
+{q:"Microsoft operating system",len:7},
+{q:"Technology behind cryptocurrencies",len:10},
+{q:"Language used to style websites",len:3},
+{q:"Version control system",len:3},
+{q:"Google mobile OS",len:7},
+{q:"Key value data structure",len:7},
+{q:"Markup language for web",len:4},
+{q:"Platform hosting Git repositories",len:6}
+
+];
+
+/* CREATE QUESTIONS */
+
+const container=document.getElementById("questions");
+
+questions.forEach((item,index)=>{
+
+let div=document.createElement("div");
+div.className="question";
+
+let p=document.createElement("p");
+p.innerText=(index+1)+". "+item.q;
+
+div.appendChild(p);
+
+let box=document.createElement("div");
+box.className="boxes";
+
+for(let i=0;i<item.len;i++){
+
+let input=document.createElement("input");
+input.maxLength=1;
+
+box.appendChild(input);
+
+}
+
+div.appendChild(box);
+container.appendChild(div);
+
+});
+
+/* PASSWORD */
 
 function checkPassword(){
 
@@ -274,7 +179,7 @@ timer=setInterval(updateTimer,1000);
 
 }else{
 
-document.getElementById("error").innerText="Wrong password";
+document.getElementById("error").innerText="Wrong Password";
 
 }
 
@@ -293,52 +198,23 @@ m+":"+(s<10?"0":"")+s;
 time--;
 
 if(time<0){
+
 clearInterval(timer);
 submitPuzzle();
-}
 
 }
 
-/* AUTO MOVE */
-
-const inputs=document.querySelectorAll("td input");
-
-inputs.forEach((input,index)=>{
-
-input.addEventListener("input",()=>{
-
-if(input.value.length===1 && index<inputs.length-1){
-inputs[index+1].focus();
 }
 
-});
-
-});
-
-/* ARROW NAVIGATION */
-
-inputs.forEach((input,index)=>{
-
-input.addEventListener("keydown",e=>{
-
-if(e.key==="ArrowRight") inputs[index+1]?.focus();
-if(e.key==="ArrowLeft") inputs[index-1]?.focus();
-
-});
-
-});
-
-/* SUBMIT TO GOOGLE SHEET */
+/* SUBMIT */
 
 function submitPuzzle(){
 
 let team=document.getElementById("team").value;
 
-let timeTaken=600-time;
-
 let responses=[];
 
-document.querySelectorAll("td input").forEach(i=>{
+document.querySelectorAll(".boxes input").forEach(i=>{
 responses.push(i.value.toUpperCase());
 });
 
@@ -348,7 +224,7 @@ method:"POST",
 
 body:JSON.stringify({
 team:team,
-time:timeTaken,
+time:600-time,
 responses:responses
 })
 
@@ -365,24 +241,17 @@ location.reload();
 
 }
 
-/* TAB SWITCH LOGOUT */
+/* ANTI CHEAT */
 
 document.addEventListener("visibilitychange",()=>{
+
 if(document.hidden){
 location.reload();
 }
+
 });
 
-/* DISABLE RIGHT CLICK */
-
 document.addEventListener("contextmenu",e=>e.preventDefault());
-
-/* DISABLE COPY PASTE */
-
-document.addEventListener("copy",e=>e.preventDefault());
-document.addEventListener("paste",e=>e.preventDefault());
-
-/* DISABLE REFRESH */
 
 document.addEventListener("keydown",function(e){
 
@@ -395,4 +264,3 @@ if(e.ctrlKey && e.key==="r") e.preventDefault();
 
 </body>
 </html>
-```
